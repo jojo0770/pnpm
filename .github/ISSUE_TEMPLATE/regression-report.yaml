@@ -2,6 +2,10 @@ name: Regression Report 🚫
 description: Report a regression in pnpm
 labels: ['type: regression']
 body:
+  - type: markdown
+    attributes:
+      value: |
+              Please summarize the regression in pnpm-specific terms. Links or copied metadata without a clear description and reproduction steps are hard to investigate and may be closed until more details are provided.
   - type: input
     id: last-working-version
     attributes:
