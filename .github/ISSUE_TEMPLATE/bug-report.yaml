@@ -6,6 +6,10 @@ body:
   - type: markdown
     attributes:
       value: |
+              Please describe the pnpm problem in your own words. Links or copied metadata without a pnpm-specific summary and reproduction steps are hard to triage and may be closed until more details are provided.
+  - type: markdown
+    attributes:
+      value: |
               If this issue affects many people in a company/big team, create a post for your company in the following discussion:
               [https://github.com/pnpm/pnpm/discussions/3787](https://github.com/pnpm/pnpm/discussions/3787)
               and link the issue in your post.
