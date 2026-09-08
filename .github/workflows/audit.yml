@@ -18,4 +18,9 @@ jobs:
       with:
         standalone: true
     - name: Audit
-      run: pnpm audit
+      run: |
+        audit_dir="$(mktemp -d)"
+        AUDIT_DIR="$audit_dir" node -e 'const fs = require("fs"); const path = require("path"); const pkg = require("./pnpm/package.json"); fs.writeFileSync(path.join(process.env.AUDIT_DIR, "package.json"), JSON.stringify({ name: "pnpm-audit", private: true, dependencies: pkg.dependencies ?? {}, optionalDependencies: pkg.optionalDependencies ?? {} }, null, 2) + "\n")'
+        cd "$audit_dir"
+        pnpm --ignore-workspace install --prod --lockfile-only --ignore-scripts
+        pnpm --ignore-workspace audit --prod
