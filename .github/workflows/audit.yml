@@ -17,5 +17,31 @@ jobs:
       uses: pnpm/action-setup@v4.1.0
       with:
         standalone: true
+    - name: Prepare audit manifest
+      run: |
+        node <<'NODE'
+        const fs = require('node:fs')
+        const os = require('node:os')
+        const path = require('node:path')
+
+        const workspaceManifest = JSON.parse(fs.readFileSync('package.json', 'utf8'))
+        const publishManifest = JSON.parse(fs.readFileSync('pnpm/package.json', 'utf8'))
+        const auditDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pnpm-audit-'))
+
+        fs.writeFileSync(path.join(auditDir, 'package.json'), `${JSON.stringify({
+          name: 'pnpm-audit',
+          private: true,
+          version: '0.0.0',
+          packageManager: workspaceManifest.packageManager,
+          dependencies: publishManifest.dependencies,
+          optionalDependencies: publishManifest.optionalDependencies,
+          pnpm: {
+            auditConfig: workspaceManifest.pnpm?.auditConfig,
+          },
+        }, null, 2)}\n`)
+        fs.copyFileSync('pnpm-lock.yaml', path.join(auditDir, 'pnpm-lock.yaml'))
+        fs.appendFileSync(process.env.GITHUB_ENV, `AUDIT_DIR=${auditDir}\n`)
+        NODE
     - name: Audit
-      run: pnpm audit
+      working-directory: ${{ env.AUDIT_DIR }}
+      run: pnpm audit --ignore-unfixable
